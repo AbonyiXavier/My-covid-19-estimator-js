@@ -71,7 +71,7 @@ const covid19ImpactEstimator = (data) => {
   // const majorityEarning = Number(data.region.avgDailyIncomePopulation);
   // const avgDailyIncome = Number(data.region.avgDailyIncomeInUSD);
   // const days = Number(normalizePeriod);
-  /* eslint operator-linebreak: off */
+  // /* eslint operator-linebreak: off */
   // const dollarsInFlight =
   //   impact.infectionsByRequestedTime * majorityEarning * avgDailyIncome * days;
   // const sDollarsInFlight =
