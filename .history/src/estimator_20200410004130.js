@@ -1,5 +1,8 @@
 /* eslint linebreak-style: off */
 const covid19ImpactEstimator = (data) => {
+  const impact = {};
+  const severeImpact = {};
+
   let normalizePeriod;
   if (data.periodType === 'days') {
     normalizePeriod = data.timeToElapse;
@@ -11,8 +14,6 @@ const covid19ImpactEstimator = (data) => {
   } else if (data.periodType === 'years') {
     normalizePeriod = 30 * 365 * data.timeToElapse;
   }
-  const impact = {};
-  const severeImpact = {};
 
   impact.currentlyInfected = data.reportedCases * 10;
   severeImpact.currentlyInfected = data.reportedCases * 50;
