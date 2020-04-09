@@ -8,8 +8,6 @@ const covid19ImpactEstimator = (data) => {
   }
   if (data.periodType === 'months') {
     normalizePeriod = 30 * data.timeToElapse;
-  } else if (data.periodType === 'years') {
-    normalizePeriod = 30 * 365 * data.timeToElapse;
   }
   const impact = {};
   const severeImpact = {};
