@@ -47,13 +47,11 @@ const covid19ImpactEstimator = (data) => {
     0.05 * severeImpact.infectionsByRequestedTime
   );
 
-  impact.casesForVentilatorsByRequestedTime = parseInt(
-    0.02 * impact.infectionsByRequestedTime,
-    10
+  impact.casesForVentilatorsByRequestedTime = Math.trunc(
+    0.02 * impact.infectionsByRequestedTime
   );
-  severeImpact.casesForVentilatorsByRequestedTime = parseInt(
-    0.02 * severeImpact.infectionsByRequestedTime,
-    10
+  severeImpact.casesForVentilatorsByRequestedTime = Math.trunc(
+    0.02 * severeImpact.infectionsByRequestedTime
   );
 
   const avgDailyIncomePopulation = Number(data.region.avgDailyIncomePopulation);
