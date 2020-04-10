@@ -22,7 +22,7 @@ const covid19ImpactEstimator = (data) => {
   const impact = {};
   const severeImpact = {};
   const normalizePeriod = numberOfDays(data.periodType, data.timeToElapse);
-  const exponent = Math.trunc(normalizePeriod / 3);
+  const exponent = parseInt(normalizePeriod / 3, 10);
 
   impact.currentlyInfected = data.reportedCases * 10;
   severeImpact.currentlyInfected = data.reportedCases * 50;
