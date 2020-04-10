@@ -1,84 +1,80 @@
 /* eslint linebreak-style: off */
+function numberOfDays(periodType, timeToElapse) {
+  if (periodType === 'days') {
+    return timeToElapse;
+  }
+  if (periodType === 'weeks') {
+    return 7 * timeToElapse;
+  }
+  if (periodType === 'months') {
+    return 30 * timeToElapse;
+  }
+  return null;
+}
+
+function hospitalBedsAvailable(totalHospitalBeds, severeCasesByRequestedTime) {
+  const bedAvalibility = 0.35 * totalHospitalBeds;
+  return bedAvalibility - severeCasesByRequestedTime;
+}
+
 const covid19ImpactEstimator = (data) => {
-  let normalizePeriod;
-  if (data.periodType === 'days') {
-    normalizePeriod = data.timeToElapse;
-  } else if (data.periodType === 'weeks') {
-    normalizePeriod = 7 * data.timeToElapse;
-  }
-  if (data.periodType === 'months') {
-    normalizePeriod = 30 * data.timeToElapse;
-  }
+  /* eslint no-console:off */
   const impact = {};
   const severeImpact = {};
+  const normalizePeriod = numberOfDays(data.periodType, data.timeToElapse);
+  const exponent = Math.trunc(normalizePeriod / 3);
 
   impact.currentlyInfected = data.reportedCases * 10;
   severeImpact.currentlyInfected = data.reportedCases * 50;
-
-  const power = Math.trunc(normalizePeriod / 3);
-
-  const infections = impact.currentlyInfected * 2 ** power;
-  const sInfections = severeImpact.currentlyInfected * 2 ** power;
-
-  const severeCases = 0.15 * infections;
-  const sSevereCases = 0.15 * sInfections;
-
-  const availableBed = 0.35 * data.totalHospitalBeds;
-
-  impact.infectionsByRequestedTime = Math.trunc(
-    impact.currentlyInfected * 2 ** power
+  impact.infectionsByRequestedTime = impact.currentlyInfected * 2 ** exponent;
+  severeImpact.infectionsByRequestedTime =
+    severeImpact.currentlyInfected * 2 ** exponent;
+  impact.severeCasesByRequestedTime = impact.infectionsByRequestedTime * 0.15;
+  severeImpact.severeCasesByRequestedTime =
+    severeImpact.infectionsByRequestedTime * 0.15;
+  impact.hospitalBedsByRequestedTime = parseInt(
+    hospitalBedsAvailable(
+      data.totalHospitalBeds,
+      impact.severeCasesByRequestedTime
+    ),
+    10
   );
-  severeImpact.infectionsByRequestedTime = Math.trunc(
-    severeImpact.currentlyInfected * 2 ** power
+  severeImpact.hospitalBedsByRequestedTime = parseInt(
+    hospitalBedsAvailable(
+      data.totalHospitalBeds,
+      severeImpact.severeCasesByRequestedTime
+    ),
+    10
   );
-
-  impact.severeCasesByRequestedTime = Math.trunc(severeCases);
-  severeImpact.severeCasesByRequestedTime = Math.trunc(sSevereCases);
-
-  impact.hospitalBedsByRequestedTime = Math.trunc(availableBed - severeCases);
-  severeImpact.hospitalBedsByRequestedTime = Math.trunc(
-    availableBed - sSevereCases
+  impact.casesForICUByRequestedTime = impact.infectionsByRequestedTime * 0.05;
+  severeImpact.casesForICUByRequestedTime =
+    severeImpact.infectionsByRequestedTime * 0.05;
+  impact.casesForVentilatorsByRequestedTime = parseInt(
+    impact.infectionsByRequestedTime * 0.02,
+    10
   );
-
-  impact.casesForICUByRequestedTime = Math.trunc(
-    0.05 * impact.infectionsByRequestedTime
+  severeImpact.casesForVentilatorsByRequestedTime = parseInt(
+    severeImpact.infectionsByRequestedTime * 0.02,
+    10
   );
-  severeImpact.casesForICUByRequestedTime = Math.trunc(
-    0.05 * severeImpact.infectionsByRequestedTime
-  );
-
-  impact.casesForVentilatorsByRequestedTime = Math.trunc(
-    0.02 * impact.infectionsByRequestedTime
-  );
-  severeImpact.casesForVentilatorsByRequestedTime = Math.trunc(
-    0.02 * severeImpact.infectionsByRequestedTime
-  );
-
-  const avgDailyIncomePopulation = Number(data.region.avgDailyIncomePopulation);
-  const avgDailyIncome = Number(data.region.avgDailyIncomeInUSD);
-  const days = Number(normalizePeriod);
   /* eslint operator-linebreak: off */
-  const dollarsInFlight =
+  impact.dollarsInFlight =
     impact.infectionsByRequestedTime *
-    avgDailyIncomePopulation *
-    avgDailyIncome *
-    days;
-  const sDollarsInFlight =
+    numberOfDays(data.periodType, data.timeToElapse) *
+    data.region.avgDailyIncomeInUSD *
+    data.region.avgDailyIncomePopulation;
+
+  severeImpact.dollarsInFlight =
     severeImpact.infectionsByRequestedTime *
-    avgDailyIncomePopulation *
-    avgDailyIncome *
-    days;
+    numberOfDays(data.periodType, data.timeToElapse) *
+    data.region.avgDailyIncomeInUSD *
+    data.region.avgDailyIncomePopulation;
 
-  impact.dollarsInFlight = parseFloat(dollarsInFlight.toFixed(2));
-  severeImpact.dollarsInFlight = parseFloat(sDollarsInFlight.toFixed(2));
-
-  const result = {
+  return {
     data,
     impact,
     severeImpact
   };
-
-  return result;
 };
 
 export default covid19ImpactEstimator;
