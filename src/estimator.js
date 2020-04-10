@@ -15,7 +15,7 @@ const covid19ImpactEstimator = (data) => {
   impact.currentlyInfected = data.reportedCases * 10;
   severeImpact.currentlyInfected = data.reportedCases * 50;
 
-  const power = parseInt(normalizePeriod / 3, 10);
+  const power = Math.trunc(normalizePeriod / 3);
 
   const infections = impact.currentlyInfected * 2 ** power;
   const sInfections = severeImpact.currentlyInfected * 2 ** power;
@@ -69,8 +69,8 @@ const covid19ImpactEstimator = (data) => {
     avgDailyIncome *
     days;
 
-  impact.dollarsInFlight = parseFloat(dollarsInFlight.toFixed(2));
-  severeImpact.dollarsInFlight = parseFloat(sDollarsInFlight.toFixed(2));
+  impact.dollarsInFlight = Number(dollarsInFlight.toFixed(2));
+  severeImpact.dollarsInFlight = Number(sDollarsInFlight.toFixed(2));
 
   const result = {
     data,
