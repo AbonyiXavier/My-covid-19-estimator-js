@@ -8,6 +8,8 @@ const covid19ImpactEstimator = (data) => {
   }
   if (data.periodType === 'months') {
     normalizePeriod = 30 * data.timeToElapse;
+  } else if (data.periodType === 'years') {
+    normalizePeriod = 30 * 365 * data.timeToElapse;
   }
   const impact = {};
   const severeImpact = {};
@@ -47,11 +49,13 @@ const covid19ImpactEstimator = (data) => {
     0.05 * severeImpact.infectionsByRequestedTime
   );
 
-  impact.casesForVentilatorsByRequestedTime = Math.trunc(
-    0.02 * impact.infectionsByRequestedTime
+  impact.casesForVentilatorsByRequestedTime = parseInt(
+    0.02 * impact.infectionsByRequestedTime,
+    10
   );
-  severeImpact.casesForVentilatorsByRequestedTime = Math.trunc(
-    0.02 * severeImpact.infectionsByRequestedTime
+  severeImpact.casesForVentilatorsByRequestedTime = parseInt(
+    0.02 * severeImpact.infectionsByRequestedTime,
+    10
   );
 
   const avgDailyIncomePopulation = Number(data.region.avgDailyIncomePopulation);
@@ -69,8 +73,8 @@ const covid19ImpactEstimator = (data) => {
     avgDailyIncome *
     days;
 
-  impact.dollarsInFlight = Number(dollarsInFlight.toFixed(2));
-  severeImpact.dollarsInFlight = Number(sDollarsInFlight.toFixed(2));
+  impact.dollarsInFlight = parseFloat(dollarsInFlight.toFixed(2));
+  severeImpact.dollarsInFlight = parseFloat(sDollarsInFlight.toFixed(2));
 
   const result = {
     data,
