@@ -1,43 +1,46 @@
 /* eslint linebreak-style: off */
 const covid19ImpactEstimator = (data) => {
-  let normalizePeriod;
-  if (data.periodType === 'days') {
-    normalizePeriod = data.timeToElapse;
-  } else if (data.periodType === 'weeks') {
-    normalizePeriod = 7 * data.timeToElapse;
-  }
-  if (data.periodType === 'months') {
-    normalizePeriod = 30 * data.timeToElapse;
-  }
   const impact = {};
   const severeImpact = {};
+
+  let numberOfDays;
+  if (data.periodType === 'days') {
+    numberOfDays = data.timeToElapse;
+  } else if (data.periodType === 'weeks') {
+    numberOfDays = 7 * data.timeToElapse;
+  }
+  if (data.periodType === 'months') {
+    numberOfDays = 30 * data.timeToElapse;
+  }
 
   impact.currentlyInfected = data.reportedCases * 10;
   severeImpact.currentlyInfected = data.reportedCases * 50;
 
-  const power = Math.trunc(normalizePeriod / 3);
+  const exponent = Math.trunc(numberOfDays / 3);
 
-  const infections = impact.currentlyInfected * 2 ** power;
-  const sInfections = severeImpact.currentlyInfected * 2 ** power;
+  const infections = impact.currentlyInfected * 2 ** exponent;
+  const sInfections = severeImpact.currentlyInfected * 2 ** exponent;
 
   const severeCases = 0.15 * infections;
   const sSevereCases = 0.15 * sInfections;
 
-  const availableBed = 0.35 * data.totalHospitalBeds;
+  const bedAvailability = 0.35 * data.totalHospitalBeds;
 
   impact.infectionsByRequestedTime = Math.trunc(
-    impact.currentlyInfected * 2 ** power
+    impact.currentlyInfected * 2 ** exponent
   );
   severeImpact.infectionsByRequestedTime = Math.trunc(
-    severeImpact.currentlyInfected * 2 ** power
+    severeImpact.currentlyInfected * 2 ** exponent
   );
 
   impact.severeCasesByRequestedTime = Math.trunc(severeCases);
   severeImpact.severeCasesByRequestedTime = Math.trunc(sSevereCases);
 
-  impact.hospitalBedsByRequestedTime = Math.trunc(availableBed - severeCases);
+  impact.hospitalBedsByRequestedTime = Math.trunc(
+    bedAvailability - severeCases
+  );
   severeImpact.hospitalBedsByRequestedTime = Math.trunc(
-    availableBed - sSevereCases
+    bedAvailability - sSevereCases
   );
 
   impact.casesForICUByRequestedTime = Math.trunc(
@@ -54,21 +57,15 @@ const covid19ImpactEstimator = (data) => {
     0.02 * severeImpact.infectionsByRequestedTime
   );
 
-  const avgDailyIncomePopulation = parseInt(
-    data.region.avgDailyIncomePopulation,
-    10
-  );
-  const avgDailyIncome = parseInt(data.region.avgDailyIncomeInUSD, 10);
-  const days = parseInt(normalizePeriod, 10);
+  const majorityEarning = Number(data.region.avgDailyIncomePopulation);
+  const avgDailyIncome = Number(data.region.avgDailyIncomeInUSD);
+  const days = Number(numberOfDays);
   /* eslint operator-linebreak: off */
   const dollarsInFlight =
-    impact.infectionsByRequestedTime *
-    avgDailyIncomePopulation *
-    avgDailyIncome *
-    days;
+    impact.infectionsByRequestedTime * majorityEarning * avgDailyIncome * days;
   const sDollarsInFlight =
     severeImpact.infectionsByRequestedTime *
-    avgDailyIncomePopulation *
+    majorityEarning *
     avgDailyIncome *
     days;
 
