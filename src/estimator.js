@@ -1,14 +1,13 @@
 /* eslint linebreak-style: off */
 function numberOfDays(periodType, timeToElapse) {
-  if (periodType === 'days') {
-    return timeToElapse;
-  }
-  if (periodType === 'weeks') {
-    return 7 * timeToElapse;
-  }
-  if (periodType === 'months') {
-    return 30 * timeToElapse;
-  }
+  if (periodType.toLowerCase() === 'days') return timeToElapse;
+
+  if (periodType.toLowerCase() === 'weeks') return timeToElapse * 7;
+
+  if (periodType.toLowerCase() === 'months') return timeToElapse * 30;
+
+  if (periodType.toLowerCase() === 'years') return timeToElapse * 30 * 365;
+
   return null;
 }
 
