@@ -58,10 +58,16 @@ const covid19ImpactEstimator = (data) => {
   const avgDailyIncome = Number(data.region.avgDailyIncomeInUSD);
   const days = Number(normalizePeriod);
   /* eslint operator-linebreak: off */
-  const dollarsInFlight = (impact.infectionsByRequestedTime
-    * majorityEarning * avgDailyIncome) / days;
-  const sDollarsInFlight = (severeImpact.infectionsByRequestedTime
-    * majorityEarning * avgDailyIncome) / days;
+  const dollarsInFlight =
+    (impact.infectionsByRequestedTime *
+      avgDailyIncomePopulation *
+      avgDailyIncome) /
+    days;
+  const sDollarsInFlight =
+    (severeImpact.infectionsByRequestedTime *
+      avgDailyIncomePopulation *
+      avgDailyIncome) /
+    days;
 
   impact.dollarsInFlight = Math.trunc(dollarsInFlight);
   severeImpact.dollarsInFlight = Math.trunc(sDollarsInFlight);
